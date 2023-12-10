@@ -1,6 +1,6 @@
 # Bare-Metal deployment of the Zion Cluster.
 
-:cloud: Zion-Cluster is a Homelab multi-node server. :cloud:
+☁️ Zion-Cluster is a Homelab multi-node server. ☁️
 
 ---
 ## Part 1: Goals and Concepts (High-level)
@@ -26,7 +26,7 @@
 ---
 ## Part 2: Hardware Overview.
 :desktop_computer:
-Check out details of the Hardware [here}(./Hardware.md).
+Check out details of the Hardware [here](Hardware.md).
 
 1. Nodes.
    - 1x - Dell R710
@@ -46,8 +46,8 @@ Check out details of the Hardware [here}(./Hardware.md).
 ## Part 3: OS and Infrastructure.
 :penguin:
 
-Operating system: Ubuntu Server 22.04LTS
-Reasons for: Community support. Well-documented. My familiarity level.
+Operating system: Ubuntu Server 22.04LTS  
+Reasons for: Community support. Well-documented. My familiarity level.  
 
 | Alternative OS Option | Reason I'm not using it.                       |
 | --------------------- | ---------------------------------------------- |
@@ -58,9 +58,9 @@ Reasons for: Community support. Well-documented. My familiarity level.
 | RHEL-based            | Remote OS Lifecycle management options.        |
 | Debian-based          | Remote OS Lifecycle management options.        |
 
-OS Lifecycle Management: Canonical MaaS
-Reasons for: Easy to setup and configure. Ability to customize hardware/storage easily.
-Complaint: :fu: No support for standard ISO other than Ubuntu or CentOS. 
+OS Lifecycle Management: Canonical MaaS  
+Reasons for: Easy to setup and configure. Ability to customize hardware/storage easily.  
+Complaint: :fu: No support for standard ISO other than Ubuntu or CentOS.  
 
 | Alternative Option    | Reason I'm not using it.                                     |
 | --------------------- | ------------------------------------------------------------ |
@@ -68,7 +68,7 @@ Complaint: :fu: No support for standard ISO other than Ubuntu or CentOS.
 | Terraform             | Extra hardware required. Steep learning curve.               |
 | iPXE (custom build)   | Extra hardware required. Need OS configuration solution.     |
 | Harvester             | No central deployment. OS customization and iSCSI initiator. |
-| Ironic                | High amount of configuration and steep learning curve.       |
+| Ironic                | High amount of configuration and steep learning curve.       |  
 Note: The Foreman was a very close second and could probably automate 90% or more of everything. :muscle:
 
 ---
