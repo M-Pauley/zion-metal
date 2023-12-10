@@ -1,4 +1,4 @@
-## Part 2: The Hardware.
+# Appendix A: Hardware Details.
 :desktop_computer:
 1. Nodes.
    - 1x - Dell R710
