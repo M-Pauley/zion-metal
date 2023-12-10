@@ -64,11 +64,12 @@ Complaint: :fu: No support for standard ISO other than Ubuntu or CentOS.
 
 | Alternative Option    | Reason I'm not using it.                                     |
 | --------------------- | ------------------------------------------------------------ |
-| Foreman               | Possible extra hardware required. Advanced config possible.  |
-| Terraform             | Extra hardware required. Steep learning curve.               |
-| iPXE (custom build)   | Extra hardware required. Need OS configuration solution.     |
-| Harvester             | No central deployment. OS customization and iSCSI initiator. |
-| Ironic                | High amount of configuration and steep learning curve.       |  
+| Foreman               | Possible extra hardware required.  Advanced config possible. |
+| Terraform             | Extra hardware required.  Steep learning curve.              |
+| iPXE (custom build)   | Extra hardware required.  Need OS configuration solution.    |
+| Harvester             | No central deployment.  OS customization and iSCSI initiator.|
+| Ironic                | High amount of configuration.  Steep learning curve.         |  
+
 Note: The Foreman was a very close second and could probably automate 90% or more of everything. :muscle:
 
 ---
