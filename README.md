@@ -11,6 +11,8 @@ Buzzwords include, but are not limited to: hyperconverged infrastructure, automa
 ---
 ## Part 1  
 ### Goals and Concepts: A High-level overview.
+🤔 A good place to start reverse planning this thing. 🤔  
+
 1. Hardware
    - Use hardware that is easily obtained from the usual ~~scumbags~~ sources. (Ebay, Maraketplace, etc.)
    - Hardware is what I already have. Most is retired/recycled enterprise gear.
@@ -33,7 +35,7 @@ Buzzwords include, but are not limited to: hyperconverged infrastructure, automa
 ---
 ## Part 2  
 ### Hardware Overview.
-🖥️ Check out details of the Hardware [here](X-a_Hardware.md).
+🖥️ Check out details of the Hardware [here](X-a_Hardware.md). 🖥️  
 
 1. Nodes.
    - 1x - Dell R710
@@ -52,7 +54,7 @@ Buzzwords include, but are not limited to: hyperconverged infrastructure, automa
 ---
 ## Part 3  
 ### OS and Infrastructure.
-🐧 The Base to build on.
+🐧 The Base to build on. 🐧  
 
 Operating system: Ubuntu Server 22.04LTS  
 Reasons for: Community support. Well-documented. My familiarity level.  
@@ -83,7 +85,7 @@ Note: The Foreman was a very close second and could probably automate 90% or mor
 ---
 ## Part 4  
 ### The Software
-💾 What makes the world go round?
+💾 What makes the world go round? 💾  
 
 Containerization: MicroK8s
 Reasons for: Quick and easy to setup. Addons for most basic features we want.
@@ -102,7 +104,7 @@ Notes:
 ---
 ## Part 5  
 ### The Cluster
-🍇 The fruit of our loom.
+🍇 The fruit of our loom. 🍇  
 
 "Deploy a Kubernetes cluster backed by Flux" following principles and practices from [onedr0p](https://github.com/onedr0p/flux-cluster-template)  
   
@@ -110,7 +112,8 @@ Baisically, we are going to 🍒cherry pick from [our template copy](https://git
 Why not just follow the template guide? I want to play with OS lifecycle and automation software to manage my bare-metal systems. There are some requirements that my systems have that are slightly unique and I want to incorporate into the base OS (e.g. Dell utilities and iSCSI). I also want to make getting the cluster up and running quick, easy, and repeatable. I have procrastinated long enough and just want to get it done, and if I have to do it again, I want to hit the easy button and let it go.  
 
 ---
-# Operation
+# Let's Begin.
+📎 It looks like you want to do something. 📎
 - [Build a Master Node](01-Master_Node.md)
 - [Add the Worker Nodes](02-Worker_Nodes.md)
 - [Release the Hounds](03-Run_the_Cluster.md)
