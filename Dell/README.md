@@ -1,0 +1,1 @@
+https://linux.dell.com/repo/community/openmanage/
