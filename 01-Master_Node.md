@@ -20,12 +20,14 @@ This node will also serve to verify our initial cluster and troubleshoot any pro
 
 ### A Fresh Start
 
-Get started by installing Ubuntu Server v22.04 on the workstation. I'll call mine ZionNode00 since it will eventually be a control and worker node. If you haven't done this a hundred times in your life, use the googler and find an install guide or use [this one](https://ubuntu.com/download/server) and find everything you need.  
+Get started by installing Ubuntu Server v22.04 on the workstation. I'll call mine ZionNode00 since it will eventually be a control and worker node. If you haven't done this a hundred times in your life, use the 🔎googler🔍 and find an install guide or use [this one](https://ubuntu.com/download/server) and find everything you need.  
 
 > TIP: It would be a good idea to create your Github account and SSH keys so they can be imported during installation.  
 
 As is in good practice, run `sudo apt update` followed by `sudo apt -y upgrade`. We should probably install git first `sudo apt install -y git`, and then clone the repo `git clone https://github.com/YourUserName/MyRepo-metal/` and `cd ./MyRepo-metal`.  
   
+#### Dell Utils  
+
 If you are running old, reclaimed Dell PowerEdge servers, I highly recommend installing any firmware updates and Dell utilities for your system.
 
 > Important Note:
@@ -38,7 +40,11 @@ If you are running old, reclaimed Dell PowerEdge servers, I highly recommend ins
 >    Integrated Dell Remote Access Controller (iDRAC), and
 >    iDRAC Service Module (iSM) 
 
-Well, 💩 can't support it forever. If you want to install OMSA use v11.0.1.0 and/or iSM v5.3.0.0 my scripts and guide can be found [here](./Dell/README.md) under the Dell folder.
+Well, 💩 can't support it forever. If you want to install OMSA use v11.0.1.0 and/or iSM v5.3.0.0 my scripts and guide can be found [here](./Dell/README.md) under the Dell folder.  
+  
+#### Other Tools  
+  
+🛠️ Now would be a good time to install any other tools you may want; It's your workstation after all.
 
 ### Install MaaS
 
@@ -50,6 +56,8 @@ If you want to setup your nodes for double-duty, now would be a good time to ins
   
 ### MaaS Setup
 
-Create cloud-init and include MaaS commissioning scripts.
+Configure host's network, setup host as a DHCP Server on a management network that has access to the Node BMC's. Setup a non-root user on the remote node's iDRAC and give it at least operator properties that can control server power. Also, don't forget to enable Redfish or remote IPMI.
+
+Create cloud-init and add any MaaS commissioning scripts.
 
 #### Commission and Deploy Nodes
