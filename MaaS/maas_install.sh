@@ -1,4 +1,4 @@
-#! /usr/env/bash
+#! /usr/bin/env bash
 ########################################################################
 # 
 # Install and configure MaaS v3.4 Snap with PostgreSQL.

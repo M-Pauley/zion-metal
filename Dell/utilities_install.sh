@@ -1,4 +1,4 @@
-#! /usr/env/bash
+#! /usr/bin/env bash
 ########################################################################
 # 
 #  This script installs Dell's OpenManage Server Administrator (OMSA)
@@ -31,7 +31,7 @@ function install_omsa() {
     echo "Installing OMSA v11.0.1.0..."
     dellreposrc="http://linux.dell.com/repo/community/openmanage/'$omsaversion'/'$ubuntuname' '$ubuntuname'"
     sudo echo "deb $dellreposrc main" | sudo tee -a /etc/apt/sources.list.d/linux.dell.com.sources.list 
-    sudo wget https://linux.dell.com/repo/pgp_pubkeys/$pgp_pubkeys
+    sudo wget "https://linux.dell.com/repo/pgp_pubkeys/$pgp_pubkeys"
     sudo apt-key add $pgp_pubkeys
     sudo apt-get update
     sudo apt-get install -y srvadmin-all
@@ -52,9 +52,9 @@ function remove_omsa() {
 
 function install_ism() {
     echo "Installing Dell OS Collector package and iSM v3.5.0..."
-    wget https://linux.dell.com/repo/community/openmanage/iSM/$majversion/jammy/pool/main/d/dcism-osc/$oscfile
+    wget "https://linux.dell.com/repo/community/openmanage/iSM/$majversion/$ubuntuname/pool/main/d/dcism-osc/$oscfile"
     dpkg -i $oscfile
-    wget https://linux.dell.com/repo/community/openmanage/iSM/$majversion/jammy/pool/main/d/dcism/$ismfile
+    wget "https://linux.dell.com/repo/community/openmanage/iSM/$majversion/$ubuntuname/pool/main/d/dcism/$ismfile"
     dpkg -i $ismfile
     echo "Installation complete. Packages retained for installation on remaining Dell nodes."
 }

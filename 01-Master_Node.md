@@ -5,10 +5,9 @@
 The master node is intended to be a combination workstation, control node, and worker node.  
 Tasks for this node will be
 - Install the required tools and utilities.
+- Setup storage components to be consumed by k8s.
 - Initalize MaaS controller.
-- Commission, configure, and deploy the other nodes.
-- Create the first k8s node
-- Configure our cluster prior to deploying ArgoCD.  
+- Commission, configure, and deploy the other nodes. 
 
 This node will also serve to verify our initial cluster and troubleshoot any problems.  
 
@@ -16,11 +15,11 @@ This node will also serve to verify our initial cluster and troubleshoot any pro
 
 ## Part 1:  
 
-🧰 A large tool requires a bigger toolbox. 🧰  
+🧰 A large tool requires a bigger box. 🧰  
 
 ### A Fresh Start
 
-Get started by installing Ubuntu Server v22.04 on the workstation. I'll call mine ZionNode00 since it will eventually be a control and worker node. If you haven't done this a hundred times in your life, use the 🔎googler🔍 and find an install guide or use [this one](https://ubuntu.com/download/server) and find everything you need.  
+Get started by installing Ubuntu Server v22.04 on the workstation. I'll call mine ZionNode00 since it will eventually be a control and worker node. If you haven't installed an OS a hundred times in your life, use the 🔎googler🔍 and find an install guide or use [this one](https://ubuntu.com/download/server) and find everything you need.  
 
 > TIP: It would be a good idea to create your Github account and SSH keys so they can be imported during installation.  
 
@@ -44,7 +43,28 @@ Well, 💩 can't support it forever. If you want to install OMSA use v11.0.1.0 a
   
 #### Other Tools  
   
-🛠️ Now would be a good time to install any other tools you may want; It's your workstation after all.
+🛠️ Now would be a good time to install any other tools you may want; It's your workstation after all.  
+To-Do (maybe):
+    - [ ] Determine required addons and CLI utilities.
+    - [ ] Create Go-task tasks.
+    - [ ] Figure out storage.
+    - [ ] setup iSCSI and multipath storage.
+
+---
+
+## Part 2:
+
+🚚 Put your junk in the trunk. 🚚
+
+### Setup Local Storage
+
+### Setup iSCSI and multipath storage
+
+---
+  
+## Part 3:
+  
+👯🔗 Yes, Master. 🔗👯
 
 ### Install MaaS
 

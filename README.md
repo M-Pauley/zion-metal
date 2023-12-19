@@ -108,7 +108,7 @@ Notes:
 
 "Deploy a Kubernetes cluster backed by Flux" following principles and practices from [onedr0p](https://github.com/onedr0p/flux-cluster-template)  
   
-Baisically, we are going to 🍒cherry pick from [our template copy](https://github.com/zion-cluster/) of onedr0p's.  
+Baisically, we are going to 🍒cherry pick from [our template copy](https://github.com/M-Pauley/zion-cluster/) of onedr0p's.  
 Why not just follow the template guide? I want to play with OS lifecycle and automation software to manage my bare-metal systems. There are some requirements that my systems have that are slightly unique and I want to incorporate into the base OS (e.g. Dell utilities and iSCSI). I also want to make getting the cluster up and running quick, easy, and repeatable. I have procrastinated long enough and just want to get it done, and if I have to do it again, I want to hit the easy button and let it go.  
 
 ---
