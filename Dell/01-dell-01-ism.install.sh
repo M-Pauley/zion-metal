@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ##############################################################
 # --- Start MAAS 1.0 script metadata ---
 # name: 01-dell-01-openmanage-repos
