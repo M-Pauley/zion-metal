@@ -21,9 +21,9 @@ ubuntuname=jammy
 
 echo "Installing Dell OS Collector package and iSM v3.5.0..."
     wget "https://linux.dell.com/repo/community/openmanage/iSM/$majversion/$ubuntuname/pool/main/d/dcism-osc/$oscfile"
-    dpkg -i $oscfile
+    sudo dpkg -i $oscfile
     wget "https://linux.dell.com/repo/community/openmanage/iSM/$majversion/$ubuntuname/pool/main/d/dcism/$ismfile"
-    dpkg -i $ismfile
+    sudo dpkg -i $ismfile
 echo "Installation complete! Cleaning up..."
     rm -fv $oscfile
     rm -fv $ismfile
