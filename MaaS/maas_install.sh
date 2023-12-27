@@ -142,3 +142,9 @@ function MAAS_INSTALL2 {
         sudo maas init region+rack --database-uri "postgres://$MAAS_DBUSER:$MAAS_DBPASS@$DB_HOSTNAME/$MAAS_DBNAME" | tee -a ./"$INSTALL_LOG"
         printf "\n\nInstallation complete!!! Logfile is located at %s$INSTALL_LOG\n\n" | tee -a ./"$INSTALL_LOG"
 }
+# Begin installation
+            case $yn in
+                [yY] ) echo "Install PostgreSQL and MaaS?"; echo "Beginning installation" | tee -a ./"$INSTALL_LOG"; PRE_CHECK;;
+                [nN] ) echo "Cancel"; exit 0;;
+                * ) echo "Invalid";;
+            esac
