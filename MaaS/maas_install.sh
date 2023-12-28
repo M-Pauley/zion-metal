@@ -80,7 +80,7 @@ function VAR_INPUT {
             * ) echo "Invalid"; clear; VAR_INPUT;;
         esac
     clear
-    printf 'Setup is using the following -- \n Database User: %s \n Database Password: %s \n Database Name: %s \n PostgreSQL Server: %s \n \n' "$MAAS_DBUSER" "$ENC_MAAS_DBPASS" "$MAAS_DBNAME" "$DB_HOSTNAME" | tee -a "$INSTALL_LOG"
+    printf 'Setup is using the following -- \n Database User: %s \n Database Password: %s \n Database Name: %s \n PostgreSQL Server: %s \n \n' "$MAAS_DBUSER" "$ENC_MAAS_DBPASS" "$MAAS_DBNAME" "$DB_HOSTNAME"
     read -rp "Continue installation? (y/n): " yn
         case $yn in
             [yY] ) printf 'Install is continuing... \n' | tee -a "$INSTALL_LOG"; PSQL_CHECK;; 
@@ -122,7 +122,7 @@ function PSQL_CHECK {
 # Verify user-set variables and validate requirements accordingly.
 function MAAS_CHECK {
     clear
-    printf "Database User: %s\n" "Database Password: %s\n" "Database Name: %s\n" "PostgreSQL Server: %s\n" "PostgreSQL Version: %s\n\n" "$MAAS_DBUSER" "$ENC_MAAS_DBPASS" "$MAAS_DBNAME" "$DB_HOSTNAME" "$PSQL_VERSION" | tee -a "$INSTALL_LOG"
+    printf "Database User: %s \n" "Database Password: %s \n" "Database Name: %s \n" "PostgreSQL Server: %s \n" "PostgreSQL Version: %s \n\n" "$MAAS_DBUSER" "$ENC_MAAS_DBPASS" "$MAAS_DBNAME" "$DB_HOSTNAME" "$PSQL_VERSION" | tee -a "$INSTALL_LOG"
     while true; do
         read -rp "Continue with these parameters? " yn
         case $yn in
@@ -167,7 +167,7 @@ function MAAS_INSTALL {
     echo "Installing MaaS and initializing as a region+rack controller."
         if [ "$MAAS_VERSION" == 0 ]; then
             echo "installing MaaS $MAAS_REQ and disabling system-timesyncd." | tee -a "$INSTALL_LOG"
-            sudo snap install --channel=$MAAS_REQ maas | tee -a "$INSTALL_LOG"
+            sudo snap install --channel=$MAAS_REQ/candidate maas | tee -a "$INSTALL_LOG"
             sudo systemctl disable --now systemd-timesyncd | tee -a "$INSTALL_LOG"
             MAAS_INSTALL2
         elif [ "$MAAS_VERSION" -lt "$MAAS_REQ" ]; then
@@ -178,7 +178,7 @@ function MAAS_INSTALL {
             while true; do
                 read -rp "Continue? " yn
                 case $yn in
-                    [yY] ) sudo snap refresh --channel=3.4 maas && sudo systemctl disable --now systemd-timesyncd | tee -a "$INSTALL_LOG"
+                    [yY] ) sudo snap refresh --channel=3.4/candidate maas && sudo systemctl disable --now systemd-timesyncd | tee -a "$INSTALL_LOG"
                         MAAS_INSTALL2;;
                     [nN] ) echo "Cancelling Installation"; exit 0;;
                     * ) echo "Invalid"; MAAS_INSTALL;;
@@ -201,9 +201,9 @@ function MAAS_INSTALL {
 function MAAS_INSTALL2 {
         sudo -i -u postgres psql -c "CREATE USER \"$MAAS_DBUSER\" WITH ENCRYPTED PASSWORD '$MAAS_DBPASS'" | tee -a "$INSTALL_LOG"
         sudo -i -u postgres createdb -O "$MAAS_DBUSER" "$MAAS_DBNAME" | tee -a "$INSTALL_LOG"
-        cat "host    ""$MAAS_DBNAME""    ""$MAAS_DBUSER""    0/0     md5" >> /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf
+        echo "host    ""$MAAS_DBNAME""    ""$MAAS_DBUSER""    0/0     md5" | tee -a /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf
         sudo maas init region+rack --database-uri "postgres://$MAAS_DBUSER:$MAAS_DBPASS@$DB_HOSTNAME/$MAAS_DBNAME" | tee -a "$INSTALL_LOG"
-        printf "\n\nInstallation complete!!! Logfile is located at %s$WD/%s$INSTALL_LOG\n\n" | tee -a "$INSTALL_LOG"
+        printf "\nInstallation complete!!! Logfile is located at %s$INSTALL_LOG \n \n" | tee -a "$INSTALL_LOG"
 }
 # Begin installation
         while true; do
