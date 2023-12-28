@@ -19,9 +19,9 @@ unset "$SESSION_ID"
 PSQL_REQ=12
 MAAS_REQ=3.4
 DB_HOSTNAME=localhost
-DATE=$(date +%Y-%m-%d)
+DATE=$(date +%Y%m%d)
 WD=$(pwd)
-INSTALL_LOG="$WD/maas_install_$DATE.log"
+INSTALL_LOG="$WD/log_install-MaaS_$DATE.log"
 SESSION_ID=$(openssl rand -base64 32 | paste --delimiters '' --serial)
 
 # Check if PostgreSQL is installed and extract version information if available
@@ -190,7 +190,7 @@ function MAAS_INSTALL2 {
             case $yn in
                 [yY] ) touch "$INSTALL_LOG" && echo "Beginning installation" | tee -a "$INSTALL_LOG";
                 echo "Clearing old Logfile if present..."
-                echo "$SESSION_ID" > "$INSTALL_LOG"
+                printf "Installation Session ID: \n%s$SESSION_ID" > "$INSTALL_LOG"
                 PRE_CHECK;;
                 [nN] ) echo "Cancel"; exit 0;;
                 * ) echo "Invalid";;
