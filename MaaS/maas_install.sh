@@ -11,8 +11,10 @@
 # Unset any stored variables from previous (failed?) runs.
 unset "$MAAS_DBUSER"
 unset "$MAAS_DBPASS"
+unset "$ENC_MAAS_DBPASS"
 unset "$MAAS_DBNAME"
 unset "$INSTALL_LOG"
+unset "$SESSION_ID"
 # Set pre-configured variables for internal use.
 PSQL_REQ=12
 MAAS_REQ=3.4
@@ -20,6 +22,7 @@ DB_HOSTNAME=localhost
 DATE=$(date +%Y-%m-%d)
 WD=$(pwd)
 INSTALL_LOG="$WD/maas_install_$DATE.log"
+SESSION_ID=$(openssl rand -base64 32 | paste --delimiters '' --serial)
 
 # Check if PostgreSQL is installed and extract version information if available
 # otherwise set PSQL_VERSION variable to 0. Check if MaaS is installed and extract
@@ -46,23 +49,27 @@ function PRE_CHECK {
 
 # User input for variables needed for PostgreSQL configuration and MaaS initialization.
 function VAR_INPUT {
-    if [ -z "$MAAS_DBUSER" ] || [ -z "$MAAS_DBPASS" ] || [ -z "$MAAS_DBNAME" ]; then
+    if [ -z "$MAAS_DBUSER" ] || [ -z "$ENC_MAAS_DBPASS" ] || [ -z "$MAAS_DBNAME" ]; then
         read -rp "Enter Database User: " MAAS_DBUSER
-        read -rp "Enter Database Password: " MAAS_DBPASS
+        read -srp "Enter Database Password: " MAAS_DBPASS
         read -rp "Enter Database Name: " MAAS_DBNAME
     else
-        printf 'Database User: %s \n Database Password: %s \n Database Name: %s \n\n' "$MAAS_DBUSER" "$MAAS_DBPASS" "$MAAS_DBNAME"
+        printf 'Database User: %s \n Database Password: %s \n Database Name: %s \n\n' "$MAAS_DBUSER" "$ENC_MAAS_DBPASS" "$MAAS_DBNAME"
         read -rp "Would you like to make any changes? (y/n): " yn
             case $yn in
                 [yY] ) echo "Changing PostgreSQL Server Information";
                         read -rp "Enter Database User: " MAAS_DBUSER;
-                        read -rp "Enter Database Password: " MAAS_DBPASS;
+                        read -srp "Enter Database Password: " MAAS_DBPASS;
                         read -rp "Enter Database Name: " MAAS_DBNAME;
                     VAR_INPUT;;
                 [nN] ) echo "Continue with PostgreSQL Server setup...";;
                 * ) echo "Invalid"; clear; VAR_INPUT;;
             esac
     fi
+# Set a variable for an encrypted version of the password to use in tty printed output and log textfile.
+# To decrypt the password run:
+# echo 'encrypted-password-in-logfile' | openssl enc -aes-256-cbc -md sha512 -a -pbkdf2 -iter 100000 -salt -pass pass:'sessionID-number' -d
+    ENC_MAAS_DBPASS=$(echo "$MAAS_DBPASS" | openssl enc -aes-256-cbc -md sha512 -a -pbkdf2 -iter 100000 -salt -pass pass:"$MAAS_DBUSER" >> "$LOGFILE")
     printf 'PostgreSQL Server: %s \n \n' "$DB_HOSTNAME"
     read -rp "Change PostgreSQL Server? (y/n): " yn
         case $yn in
@@ -72,7 +79,13 @@ function VAR_INPUT {
             * ) echo "Invalid"; clear; VAR_INPUT;;
         esac
     clear
-    printf 'Setup is using the following -- \n Database User: %s \n Database Password: %s \n Database Name: %s \n PostgreSQL Server: %s \n \n' "$MAAS_DBUSER" "$MAAS_DBPASS" "$MAAS_DBNAME" "$DB_HOSTNAME"
+    printf 'Setup is using the following -- \n Database User: %s \n Database Password: %s \n Database Name: %s \n PostgreSQL Server: %s \n \n' "$MAAS_DBUSER" "$ENC_MAAS_DBPASS" "$MAAS_DBNAME" "$DB_HOSTNAME" | tee -a "$INSTALL_LOG"
+    read -rp "Continue installation? (y/n): " yn
+        case $yn in
+            [yY] ) printf 'Install is continuing...' | tee -a "$INSTALL_LOG"; PSQL_CHECK;; 
+            [nN] ) echo "User requested stoppage. Exiting..." | tee -a "$INSTALL_LOG"; EXIT 0;;
+            * ) echo "Invalid"; clear; VAR_INPUT;;
+        esac
 }
 
 # Check if /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf has any conflict with current data.
@@ -85,7 +98,7 @@ function PSQL_CHECK {
     if  [ "$PSQL_VERSION" -gt "$PSQL_REQ" ]; then
         echo "PostgreSQL Version: $PSQL_VERSION. Minimum requirement met."; wait 90; MAAS_CHECK;
     elif [ -z "$PSQL_VERSION" ]; then
-            POSTGRE_INSTALL;
+            POSTGRE_INSTALL
         else
             printf "Unexpected error: Setup cannot continue! \n
             Please upgrade, inspect, or fix PostgreSQL then run this script again. \n
@@ -169,13 +182,16 @@ function MAAS_INSTALL2 {
         sudo -i -u postgres createdb -O "$MAAS_DBUSER" "$MAAS_DBNAME" | tee -a "$INSTALL_LOG"
         cat "host    ""$MAAS_DBNAME""    ""$MAAS_DBUSER""    0/0     md5" >> /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf
         sudo maas init region+rack --database-uri "postgres://$MAAS_DBUSER:$MAAS_DBPASS@$DB_HOSTNAME/$MAAS_DBNAME" | tee -a "$INSTALL_LOG"
-        printf "\n\nInstallation complete!!! Logfile is located at %s$INSTALL_LOG\n\n" | tee -a "$INSTALL_LOG"
+        printf "\n\nInstallation complete!!! Logfile is located at %s$WD/%s$INSTALL_LOG\n\n" | tee -a "$INSTALL_LOG"
 }
 # Begin installation
         while true; do
             read -rp "Install PostgreSQL and MaaS? " yn
             case $yn in
-                [yY] ) touch "$INSTALL_LOG" && echo "Beginning installation" | tee -a "$INSTALL_LOG"; PRE_CHECK;;
+                [yY] ) touch "$INSTALL_LOG" && echo "Beginning installation" | tee -a "$INSTALL_LOG";
+                echo "Clearing old Logfile if present..."
+                echo "$SESSION_ID" > "$INSTALL_LOG"
+                PRE_CHECK;;
                 [nN] ) echo "Cancel"; exit 0;;
                 * ) echo "Invalid";;
             esac
