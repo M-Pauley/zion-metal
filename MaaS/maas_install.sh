@@ -46,7 +46,7 @@ function PRE_CHECK {
 
 # User input for variables needed for PostgreSQL configuration and MaaS initialization.
 function VAR_INPUT {
-    printf "Database User: %s\n" "Database Password: %s\n" "Database Name: %s\n" "PostgreSQL Server: %s\n\n" "$MAAS_DBUSER" "$MAAS_DBPASS" "$MAAS_DBNAME" "$DB_HOSTNAME"
+    printf 'Database User: %s \n Database Password: %s \n"Database Name: %s \n PostgreSQL Server: %s \n \n' "$MAAS_DBUSER" "$MAAS_DBPASS" "$MAAS_DBNAME" "$DB_HOSTNAME"
     read -rp "Enter Database User: " MAAS_DBUSER
     read -rp "Enter Database Password: " MAAS_DBPASS
     read -rp "Enter Database Name: " MAAS_DBNAME
