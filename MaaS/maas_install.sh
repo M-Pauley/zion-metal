@@ -73,8 +73,7 @@ function VAR_INPUT {
     printf 'PostgreSQL Server: %s \n \n' "$DB_HOSTNAME"
     read -rp "Change PostgreSQL Server? (y/n): " yn
         case $yn in
-            [yY] ) read -rp "Enter PostgreSQL Server Name or IP: " DB_HOSTNAME; 
-                VAR_INPUT;;
+            [yY] ) read -rp "Enter PostgreSQL Server Name or IP: " DB_HOSTNAME;;
             [nN] ) echo "PostgreSQL Server Hostname will remain: $DB_HOSTNAME"; PSQL_CHECK;;
             * ) echo "Invalid"; clear; VAR_INPUT;;
         esac
@@ -83,7 +82,7 @@ function VAR_INPUT {
     read -rp "Continue installation? (y/n): " yn
         case $yn in
             [yY] ) printf 'Install is continuing...' | tee -a "$INSTALL_LOG"; PSQL_CHECK;; 
-            [nN] ) echo "User requested stoppage. Exiting..." | tee -a "$INSTALL_LOG"; EXIT 0;;
+            [nN] ) echo "Clearing user information..." | tee -a "$INSTALL_LOG"; unset "$MAAS_DBUSER"; unset "$MAAS_DBPASS"; unset "$ENC_MAAS_DBPASS"; unset "$MAAS_DBNAME";VAR_INPUT;;
             * ) echo "Invalid"; clear; VAR_INPUT;;
         esac
 }
