@@ -30,7 +30,7 @@ SESSION_ID=$(openssl rand -base64 32 | paste --delimiters '' --serial)
 function PRE_CHECK {
     echo "Checking is PostgreSQL is installed and getting version..." | tee -a "$INSTALL_LOG"
     if command -v psql > /dev/null; then
-        PSQL_VERSION=$(psql --version | awk -F '{print $3}' | cut -d. -f1)
+        PSQL_VERSION=$(psql --version | awk -F ' ' '{print $3}' | cut -d. -f1)
         echo "PostgreSQL is already installed - version is $PSQL_VERSION" | tee -a "$INSTALL_LOG"
     else
         PSQL_VERSION=0
