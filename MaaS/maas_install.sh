@@ -122,7 +122,7 @@ function PSQL_CHECK {
 # Verify user-set variables and validate requirements accordingly.
 function MAAS_CHECK {
     clear
-    printf "Database User: %s \n" "Database Password: %s \n" "Database Name: %s \n" "PostgreSQL Server: %s \n" "PostgreSQL Version: %s \n\n" "$MAAS_DBUSER" "$ENC_MAAS_DBPASS" "$MAAS_DBNAME" "$DB_HOSTNAME" "$PSQL_VERSION" | tee -a "$INSTALL_LOG"
+    printf "Setup is using the following -- \n Database User: %s \n Database Password: %s \n Database Name: %s \n PostgreSQL Server: %s \n PostgreSQL Version: %s \n" "$MAAS_DBUSER" "$ENC_MAAS_DBPASS" "$MAAS_DBNAME" "$DB_HOSTNAME" "$PSQL_VERSION" | tee -a "$INSTALL_LOG"
     while true; do
         read -rp "Continue with these parameters? " yn
         case $yn in
@@ -201,9 +201,10 @@ function MAAS_INSTALL {
 function MAAS_INSTALL2 {
         sudo -i -u postgres psql -c "CREATE USER \"$MAAS_DBUSER\" WITH ENCRYPTED PASSWORD '$MAAS_DBPASS'" | tee -a "$INSTALL_LOG"
         sudo -i -u postgres createdb -O "$MAAS_DBUSER" "$MAAS_DBNAME" | tee -a "$INSTALL_LOG"
-        echo "host    ""$MAAS_DBNAME""    ""$MAAS_DBUSER""    0/0     md5" | tee -a /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf
+        echo "host    ""$MAAS_DBNAME""    ""$MAAS_DBUSER""    0/0     md5" | sudo tee -a /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf
         sudo maas init region+rack --database-uri "postgres://$MAAS_DBUSER:$MAAS_DBPASS@$DB_HOSTNAME/$MAAS_DBNAME" | tee -a "$INSTALL_LOG"
         printf "\nInstallation complete!!! Logfile is located at %s$INSTALL_LOG \n \n" | tee -a "$INSTALL_LOG"
+        exit 0
 }
 # Begin installation
         while true; do
