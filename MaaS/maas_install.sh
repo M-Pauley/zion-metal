@@ -52,6 +52,7 @@ function VAR_INPUT {
     if [ -z "$MAAS_DBUSER" ] || [ -z "$ENC_MAAS_DBPASS" ] || [ -z "$MAAS_DBNAME" ]; then
         read -rp "Enter Database User: " MAAS_DBUSER
         read -srp "Enter Database Password: " MAAS_DBPASS
+        printf "\n"
         read -rp "Enter Database Name: " MAAS_DBNAME
     else
         printf 'Database User: %s \n Database Password: %s \n Database Name: %s \n\n' "$MAAS_DBUSER" "$ENC_MAAS_DBPASS" "$MAAS_DBNAME"
@@ -60,6 +61,7 @@ function VAR_INPUT {
                 [yY] ) echo "Changing PostgreSQL Server Information";
                         read -rp "Enter Database User: " MAAS_DBUSER;
                         read -srp "Enter Database Password: " MAAS_DBPASS;
+                        printf "\n";
                         read -rp "Enter Database Name: " MAAS_DBNAME;
                     VAR_INPUT;;
                 [nN] ) echo "Continue with PostgreSQL Server setup...";;
@@ -87,28 +89,39 @@ function VAR_INPUT {
         esac
 }
 
-# Check if /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf has any conflict with current data.
+
 function PSQL_CHECK {
-    if sudo grep -q "host    ""$MAAS_DBNAME""    ""$MAAS_DBUSER""    0/0     md5" /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf; then
-            echo "PostgreSQL config file already contains the entry required to continue. Going back to User Setup." | tee -a "$INSTALL_LOG"; VAR_INPUT;
-        else
-            echo "PostgreSQL config file has been successfully checked for conflicting configuration." | tee -a "$INSTALL_LOG"
-    fi
-    if  [ "$PSQL_VERSION" -gt "$PSQL_REQ" ]; then
-        echo "PostgreSQL Version: $PSQL_VERSION. Minimum requirement met."; wait 90; MAAS_CHECK;
-    elif [ -z "$PSQL_VERSION" ]; then
+# First, check if PSQL is installed and goto install if pre-check function set PSQL_VERSION to 0.
+    if [ "$PSQL_VERSION" == 0 ]; then
             POSTGRE_INSTALL
+# Second, check if version meets minimum requirement.
+    elif  [ "$PSQL_VERSION" -gt "$PSQL_REQ" ]; then
+        echo "PostgreSQL Version: $PSQL_VERSION. Minimum requirement met."
+# If installed and meets required version, check if /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf has any conflict with current data.
+# This indicates if the database was previously created. It may need to be removed and this entry deleted from the config file.
+# It is possible to restore a previous MaaS database from backup, but if you are doing that, manually install MaaS and follow the maas.io docs.
+    elif [ -f /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf ]; then
+        if sudo grep -q "host    ""$MAAS_DBNAME""    ""$MAAS_DBUSER""    0/0     md5" /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf; then
+            echo "PostgreSQL config file already contains the entry required to continue. Going back to User Setup." | tee -a "$INSTALL_LOG"
+            sleep 15
+            VAR_INPUT
         else
+            echo "PostgreSQL config file has been successfully checked for conflicting configuration. Continuing..." | tee -a "$INSTALL_LOG"
+            sleep 15
+            MAAS_CHECK
+        fi
+# Catch-all error for if none of the above are true.
+    else
             printf "Unexpected error: Setup cannot continue! \n
-            Please upgrade, inspect, or fix PostgreSQL then run this script again. \n
-            Follow guide at: https://maas.io/docs/upgrading-postgresql-12-to-version-14 \n" | tee -a "$INSTALL_LOG"; EXIT 0;
+            Please upgrade, inspect, or fix PostgreSQL issue then run this script again. \n
+            Follow guide at: https://maas.io/docs/upgrading-postgresql-12-to-version-14 \n" | tee -a "$INSTALL_LOG"; exit 0;
     fi
 }
 
 # Verify user-set variables and validate requirements accordingly.
 function MAAS_CHECK {
     clear
-    printf "Database User: %s\n" "Database Password: %s\n" "Database Name: %s\n" "PostgreSQL Server: %s\n" "PostgreSQL Version: %s\n\n" "$MAAS_DBUSER" "$MAAS_DBPASS" "$MAAS_DBNAME" "$DB_HOSTNAME" "$PSQL_VERSION" | tee -a "$INSTALL_LOG"
+    printf "Database User: %s\n" "Database Password: %s\n" "Database Name: %s\n" "PostgreSQL Server: %s\n" "PostgreSQL Version: %s\n\n" "$MAAS_DBUSER" "$ENC_MAAS_DBPASS" "$MAAS_DBNAME" "$DB_HOSTNAME" "$PSQL_VERSION" | tee -a "$INSTALL_LOG"
     while true; do
         read -rp "Continue with these parameters? " yn
         case $yn in
