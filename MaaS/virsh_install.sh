@@ -12,12 +12,14 @@
 #
 ########################################################################
 #
+while true; do
     read -rp "Install Virt-Manager for desktop environment VM Management?" yn
         case $yn in
             [yY] ) sudo apt install -y qemu-kvm virt-manager libvirt-daemon-system virtinst libvirt-clients bridge-utils;;
             [nN] ) sudo apt install -y qemu-kvm libvirt-daemon-system virtinst libvirt-clients bridge-utils;;
             * ) echo "Invalid";;
         esac
+    done
 sudo systemctl enable --now libvirtd
 sudo systemctl start libvirtd
 echo "Adding current user to kvm/libvirt group..."
