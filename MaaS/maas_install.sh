@@ -46,33 +46,50 @@ function PRE_CHECK {
 
 # User input for variables needed for PostgreSQL configuration and MaaS initialization.
 function VAR_INPUT {
-    printf 'Database User: %s \n Database Password: %s \n"Database Name: %s \n PostgreSQL Server: %s \n \n' "$MAAS_DBUSER" "$MAAS_DBPASS" "$MAAS_DBNAME" "$DB_HOSTNAME"
-    read -rp "Enter Database User: " MAAS_DBUSER
-    read -rp "Enter Database Password: " MAAS_DBPASS
-    read -rp "Enter Database Name: " MAAS_DBNAME
+    if [ -z "$MAAS_DBUSER" ] || [ -z "$MAAS_DBPASS" ] || [ -z "$MAAS_DBNAME" ]; then
+        read -rp "Enter Database User: " MAAS_DBUSER
+        read -rp "Enter Database Password: " MAAS_DBPASS
+        read -rp "Enter Database Name: " MAAS_DBNAME
+    else
+        printf 'Database User: %s \n Database Password: %s \n Database Name: %s \n\n' "$MAAS_DBUSER" "$MAAS_DBPASS" "$MAAS_DBNAME"
+        read -rp "Would you like to make any changes? (y/n): " yn
+            case $yn in
+                [yY] ) echo "Changing PostgreSQL Server Information";
+                        read -rp "Enter Database User: " MAAS_DBUSER;
+                        read -rp "Enter Database Password: " MAAS_DBPASS;
+                        read -rp "Enter Database Name: " MAAS_DBNAME;
+                    VAR_INPUT;;
+                [nN] ) echo "Continue with PostgreSQL Server setup...";;
+                * ) echo "Invalid"; clear; VAR_INPUT;;
+            esac
+    fi
+    printf 'PostgreSQL Server: %s \n \n' "$DB_HOSTNAME"
     read -rp "Change PostgreSQL Server? (y/n): " yn
         case $yn in
-            [yY] ) echo "Changing PostgreSQL Server Hostname";
-                read -rp "Enter Database Name: " DB_HOSTNAME; 
+            [yY] ) read -rp "Enter PostgreSQL Server Name or IP: " DB_HOSTNAME; 
                 VAR_INPUT;;
             [nN] ) echo "PostgreSQL Server Hostname will remain: $DB_HOSTNAME"; PSQL_CHECK;;
             * ) echo "Invalid"; clear; VAR_INPUT;;
         esac
+    clear
+    printf 'Setup is using the following -- \n Database User: %s \n Database Password: %s \n Database Name: %s \n PostgreSQL Server: %s \n \n' "$MAAS_DBUSER" "$MAAS_DBPASS" "$MAAS_DBNAME" "$DB_HOSTNAME"
 }
 
 # Check if /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf has any conflict with current data.
 function PSQL_CHECK {
     if sudo grep -q "host    ""$MAAS_DBNAME""    ""$MAAS_DBUSER""    0/0     md5" /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf; then
-        echo "PostgreSQL config file already contains the entry required to continue. Going back to User Setup." | tee -a "$INSTALL_LOG"; VAR_INPUT;
-    else
-        echo "PostgreSQL config file has been successfully checked for conflicting configuration." | tee -a "$INSTALL_LOG"
+            echo "PostgreSQL config file already contains the entry required to continue. Going back to User Setup." | tee -a "$INSTALL_LOG"; VAR_INPUT;
+        else
+            echo "PostgreSQL config file has been successfully checked for conflicting configuration." | tee -a "$INSTALL_LOG"
     fi
     if  [ "$PSQL_VERSION" -gt "$PSQL_REQ" ]; then
         echo "PostgreSQL Version: $PSQL_VERSION. Minimum requirement met."; wait 90; MAAS_CHECK;
-    else
-        echo "Setup cannot continue!" | tee -a "$INSTALL_LOG"
-        echo "Please upgrade, inspect, or fix PostgreSQL then run this script again." | tee -a "$INSTALL_LOG"
-        echo "Follow guide at: https://maas.io/docs/upgrading-postgresql-12-to-version-14" | tee -a "$INSTALL_LOG"; EXIT 0;
+    elif [ -z "$PSQL_VERSION" ]; then
+            POSTGRE_INSTALL;
+        else
+            printf "Unexpected error: Setup cannot continue! \n
+            Please upgrade, inspect, or fix PostgreSQL then run this script again. \n
+            Follow guide at: https://maas.io/docs/upgrading-postgresql-12-to-version-14 \n" | tee -a "$INSTALL_LOG"; EXIT 0;
     fi
 }
 
