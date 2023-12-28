@@ -158,7 +158,7 @@ function MAAS_INSTALL2 {
         while true; do
             read -rp "Install PostgreSQL and MaaS? " yn
             case $yn in
-                [yY] ) echo "Beginning installation" | tee -a ./"$INSTALL_LOG"; PRE_CHECK;;
+                [yY] ) touch "$INSTALL_LOG" && echo "Beginning installation" | tee -a ./"$INSTALL_LOG"; PRE_CHECK;;
                 [nN] ) echo "Cancel"; exit 0;;
                 * ) echo "Invalid";;
             esac
