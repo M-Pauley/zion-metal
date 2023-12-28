@@ -141,7 +141,7 @@ function POSTGRE_INSTALL {
         while true; do
             read -rp "Install PostgreSQL? " yn
             case $yn in
-                [yY] ) echo "Installing PostgreSQL" | tee -a "$INSTALL_LOG"; sudo apt update -y && sudo apt install -y postgresql | tee -a "$INSTALL_LOG";;
+                [yY] ) echo "Installing PostgreSQL" | tee -a "$INSTALL_LOG"; sudo apt update -y && sudo apt install -y postgresql | tee -a "$INSTALL_LOG"; MAAS_INSTALL;;
                 [nN] ) echo "Cancelling Installation"; exit 0;;
                 * ) echo "Invalid"; POSTGRE_INSTALL;;
             esac
