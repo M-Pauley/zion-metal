@@ -83,7 +83,7 @@ function VAR_INPUT {
     printf 'Setup is using the following -- \n Database User: %s \n Database Password: %s \n Database Name: %s \n PostgreSQL Server: %s \n \n' "$MAAS_DBUSER" "$ENC_MAAS_DBPASS" "$MAAS_DBNAME" "$DB_HOSTNAME" | tee -a "$INSTALL_LOG"
     read -rp "Continue installation? (y/n): " yn
         case $yn in
-            [yY] ) printf 'Install is continuing...' | tee -a "$INSTALL_LOG"; PSQL_CHECK;; 
+            [yY] ) printf 'Install is continuing... \n' | tee -a "$INSTALL_LOG"; PSQL_CHECK;; 
             [nN] ) echo "Clearing user information..." | tee -a "$INSTALL_LOG"; unset "$MAAS_DBUSER"; unset "$MAAS_DBPASS"; unset "$ENC_MAAS_DBPASS"; unset "$MAAS_DBNAME";VAR_INPUT;;
             * ) echo "Invalid"; clear; VAR_INPUT;;
         esac
@@ -100,7 +100,8 @@ function PSQL_CHECK {
 # If installed and meets required version, check if /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf has any conflict with current data.
 # This indicates if the database was previously created. It may need to be removed and this entry deleted from the config file.
 # It is possible to restore a previous MaaS database from backup, but if you are doing that, manually install MaaS and follow the maas.io docs.
-    elif [ -f /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf ]; then
+    fi
+    if [ -f /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf ]; then
         if sudo grep -q "host    ""$MAAS_DBNAME""    ""$MAAS_DBUSER""    0/0     md5" /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf; then
             echo "PostgreSQL config file already contains the entry required to continue. Going back to User Setup." | tee -a "$INSTALL_LOG"
             sleep 15
@@ -141,13 +142,19 @@ function POSTGRE_INSTALL {
         while true; do
             read -rp "Install PostgreSQL? " yn
             case $yn in
-                [yY] ) echo "Installing PostgreSQL" | tee -a "$INSTALL_LOG"; sudo apt update -y && sudo apt install -y postgresql | tee -a "$INSTALL_LOG"; MAAS_INSTALL;;
+                [yY] ) echo "Installing PostgreSQL" | tee -a "$INSTALL_LOG"
+            # Removes apt's restart services prompt.
+                    echo "\$nrconf{restart} = \"l\"" | sudo tee -a /etc/needrestart/needrestart.conf
+                    sudo apt update -y && sudo apt install -y postgresql | tee -a "$INSTALL_LOG"
+                    MAAS_INSTALL;;
                 [nN] ) echo "Cancelling Installation"; exit 0;;
                 * ) echo "Invalid"; POSTGRE_INSTALL;;
             esac
         done
     elif  [ "$PSQL_VERSION" -gt "$PSQL_REQ" ]; then
-        echo "PostgreSQL Version: $PSQL_VERSION. Minimum requirement met." | tee -a "$INSTALL_LOG"; wait 90; MAAS_INSTALL;
+        echo "PostgreSQL Version: $PSQL_VERSION. Minimum requirement met." | tee -a "$INSTALL_LOG"
+        wait 90
+        MAAS_INSTALL
     else
         echo "Please inspect and fix or upgrade PostgreSQL to required version and run this script again."
         echo "Follow guide at: https://maas.io/docs/upgrading-postgresql-12-to-version-14"; EXIT 0;
@@ -162,6 +169,7 @@ function MAAS_INSTALL {
             echo "installing MaaS $MAAS_REQ and disabling system-timesyncd." | tee -a "$INSTALL_LOG"
             sudo snap install --channel=$MAAS_REQ maas | tee -a "$INSTALL_LOG"
             sudo systemctl disable --now systemd-timesyncd | tee -a "$INSTALL_LOG"
+            MAAS_INSTALL2
         elif [ "$MAAS_VERSION" -lt "$MAAS_REQ" ]; then
             echo "MaaS already installed." | tee -a "$INSTALL_LOG"
             printf "CAUTION: Check https://maas.io/docs/upgrading-maas\n
@@ -170,7 +178,8 @@ function MAAS_INSTALL {
             while true; do
                 read -rp "Continue? " yn
                 case $yn in
-                    [yY] ) sudo snap refresh --channel=3.4 maas && sudo systemctl disable --now systemd-timesyncd | tee -a "$INSTALL_LOG"; MAAS_INSTALL2;;
+                    [yY] ) sudo snap refresh --channel=3.4 maas && sudo systemctl disable --now systemd-timesyncd | tee -a "$INSTALL_LOG"
+                        MAAS_INSTALL2;;
                     [nN] ) echo "Cancelling Installation"; exit 0;;
                     * ) echo "Invalid"; MAAS_INSTALL;;
                 esac
