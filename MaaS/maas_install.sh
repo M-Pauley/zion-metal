@@ -184,7 +184,7 @@ function MAAS_INSTALL {
                     * ) echo "Invalid"; MAAS_INSTALL;;
                 esac
             done
-        elif [ "$MAAS_VERSION" == $MAAS_REQ ]; then
+        elif [[ "$MAAS_VERSION" == "$MAAS_REQ" ]]; then
             echo "Required version of MaaS is already installed on theis system." | tee -a "$INSTALL_LOG"
             echo "If you continue, there may be issues with an existing MaaS installation." | tee -a "$INSTALL_LOG"
             while true; do
