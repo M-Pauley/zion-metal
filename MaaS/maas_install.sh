@@ -38,7 +38,7 @@ function PRE_CHECK {
     fi
     echo "Checking if MaaS is installed and getting version..." | tee -a "$INSTALL_LOG"
     if command -v maas > /dev/null; then
-        MAAS_VERSION=$(snap list maas | awk -F '{print $4}' | tail -n1)
+        MAAS_VERSION=$(snap list maas | awk -F ' ' '{print $4}' | tail -n1 | cut -d "/" -f 1)
         echo "MaaS is already installed - version is $MAAS_VERSION" | tee -a "$INSTALL_LOG"
     else
         MAAS_VERSION=0
