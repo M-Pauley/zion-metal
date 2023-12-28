@@ -80,11 +80,13 @@ function PSQL_CHECK {
 function MAAS_CHECK {
     clear
     printf "Database User: %s\n" "Database Password: %s\n" "Database Name: %s\n" "PostgreSQL Server: %s\n" "PostgreSQL Version: %s\n\n" "$MAAS_DBUSER" "$MAAS_DBPASS" "$MAAS_DBNAME" "$DB_HOSTNAME" "$PSQL_VERSION" | tee -a ./"$INSTALL_LOG"
-    case $yn in
-        [yY] ) echo "Continue with installation using these parameters?"; POSTGRE_INSTALL;;
-        [nN] ) echo "Cancel Installation"; exit 0;;
-        * ) echo "Invalid"; MAAS_CHECK;;
-    esac
+    while true; do
+        read -p "Continue with these parameters? " yn
+        case $yn in
+            [yY] ) echo "Proceeding with above parameters..."; POSTGRE_INSTALL;;
+            [nN] ) echo "Cancelling Installation"; exit 0;;
+            * ) echo "Invalid"; MAAS_CHECK;;
+        esac
 }
 
 # Install PostgreSQL Server if not already installed. Verify version is greater than minimum version
@@ -93,11 +95,13 @@ function MAAS_CHECK {
 # disturb other database operations.
 function POSTGRE_INSTALL {
     if [ "$PSQL_VERSION" == 0 ]; then
-        case $yn in
-            [yY] ) echo "Install PostgreSQL" | tee -a ./"$INSTALL_LOG"; sudo apt update -y && sudo apt install -y postgresql | tee -a ./"$INSTALL_LOG";;
-            [nN] ) echo "Cancel Installation"; exit 0;;
-            * ) echo "Invalid"; POSTGRE_INSTALL;;
-        esac
+        while true; do
+            read -p "Install PostgreSQL? " yn
+            case $yn in
+                [yY] ) echo "Installing PostgreSQL" | tee -a ./"$INSTALL_LOG"; sudo apt update -y && sudo apt install -y postgresql | tee -a ./"$INSTALL_LOG";;
+                [nN] ) echo "Cancelling Installation"; exit 0;;
+                * ) echo "Invalid"; POSTGRE_INSTALL;;
+            esac
     elif  [ "$PSQL_VERSION" -gt "$PSQL_REQ" ]; then
         echo "PostgreSQL Version: $PSQL_VERSION. Minimum requirement met." | tee -a ./"$INSTALL_LOG"; wait 90; MAAS_INSTALL;
     else
@@ -119,19 +123,23 @@ function MAAS_INSTALL {
             printf "CAUTION: Check https://maas.io/docs/upgrading-maas\n
                     to verify current version can be upgraded (via snap refresh)\n
                     from %s$MAAS_VERSION to %s$MAAS_REQ with PostgreSQL %s$PSQL_VERSION.\n" | tee -a ./"$INSTALL_LOG"
-            case $yn in
-                [yY] ) echo "Upgrade MaaS to $MAAS_REQ?"; sudo snap refresh --channel=3.4 maas && sudo systemctl disable --now systemd-timesyncd | tee -a ./"$INSTALL_LOG"; MAAS_INSTALL2;;
-                [nN] ) echo "Cancel Installation"; exit 0;;
-                * ) echo "Invalid"; MAAS_INSTALL;;
-            esac
+            while true; do
+                read -p "Continue? " yn
+                case $yn in
+                    [yY] ) sudo snap refresh --channel=3.4 maas && sudo systemctl disable --now systemd-timesyncd | tee -a ./"$INSTALL_LOG"; MAAS_INSTALL2;;
+                    [nN] ) echo "Cancelling Installation"; exit 0;;
+                    * ) echo "Invalid"; MAAS_INSTALL;;
+                esac
         elif [ "$MAAS_VERSION" == $MAAS_REQ ]; then
             echo "Required version of MaaS is already installed on theis system." | tee -a ./"$INSTALL_LOG"
             echo "If you continue, there may be issues with an existing MaaS installation." | tee -a ./"$INSTALL_LOG"
-            case $yn in
-                [yY] ) echo "Continue?"; echo "Ok, but this may cause issues." | tee -a ./"$INSTALL_LOG"; MAAS_INSTALL2;;
-                [nN] ) echo "Cancel Installation"; exit 0;;
-                * ) echo "Invalid"; MAAS_INSTALL;;
-            esac
+            while true; do
+                read -p "Continue? " yn
+                case $yn in
+                    [yY] ) echo "Ok, but this may cause issues." | tee -a ./"$INSTALL_LOG"; MAAS_INSTALL2;;
+                    [nN] ) echo "Cancelling Installation"; exit 0;;
+                    * ) echo "Invalid"; MAAS_INSTALL;;
+                esac
         fi
 }
 # Setup PostgreSQL an initialize MaaS region+rack.
@@ -143,8 +151,10 @@ function MAAS_INSTALL2 {
         printf "\n\nInstallation complete!!! Logfile is located at %s$INSTALL_LOG\n\n" | tee -a ./"$INSTALL_LOG"
 }
 # Begin installation
+        while true; do
+            read -p "Install PostgreSQL and MaaS? " yn
             case $yn in
-                [yY] ) echo "Install PostgreSQL and MaaS?"; echo "Beginning installation" | tee -a ./"$INSTALL_LOG"; PRE_CHECK;;
+                [yY] ) echo "Beginning installation" | tee -a ./"$INSTALL_LOG"; PRE_CHECK;;
                 [nN] ) echo "Cancel"; exit 0;;
                 * ) echo "Invalid";;
             esac
