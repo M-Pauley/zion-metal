@@ -69,7 +69,7 @@ function VAR_INPUT {
 # Set a variable for an encrypted version of the password to use in tty printed output and log textfile.
 # To decrypt the password run:
 # echo 'encrypted-password-in-logfile' | openssl enc -aes-256-cbc -md sha512 -a -pbkdf2 -iter 100000 -salt -pass pass:'sessionID-number' -d
-    ENC_MAAS_DBPASS=$(echo "$MAAS_DBPASS" | openssl enc -aes-256-cbc -md sha512 -a -pbkdf2 -iter 100000 -salt -pass pass:"$MAAS_DBUSER" >> "$LOGFILE")
+    ENC_MAAS_DBPASS=$(echo "$MAAS_DBPASS" | openssl enc -aes-256-cbc -md sha512 -a -pbkdf2 -iter 100000 -salt -pass pass:"$SESSION_ID" >> "$INSTALL_LOG")
     printf 'PostgreSQL Server: %s \n \n' "$DB_HOSTNAME"
     read -rp "Change PostgreSQL Server? (y/n): " yn
         case $yn in
