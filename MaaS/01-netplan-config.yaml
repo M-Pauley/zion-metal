@@ -1,0 +1,39 @@
+# This is the network config for the MaaS controller.
+network:
+  bonds:
+    bond0-Cluster:
+      dhcp4: true
+      interfaces:
+      - eno1
+      - eno3
+      parameters:
+        lacp-rate: slow
+        mode: 802.3ad
+        transmit-hash-policy: layer2
+    bond1-Ops:
+      interfaces:
+      - eno2
+      - eno4
+      addresses:
+      - 10.0.55.50/24
+      nameservers:
+        search:
+        - local
+        - cyberpunkcity.org
+        addresses:
+        - 10.0.55.1
+        - 1.1.1.1
+      parameters:
+        lacp-rate: slow
+        mode: 802.3ad
+        transmit-hash-policy: layer2
+  ethernets:
+    eno1:
+      dhcp4: true
+    eno2:
+      dhcp4: true
+    eno3:
+      dhcp4: true
+    eno4:
+      dhcp4: true
+  version: 2

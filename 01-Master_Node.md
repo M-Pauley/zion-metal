@@ -47,8 +47,9 @@ Well, 💩 can't support it forever. If you want to install OMSA use v11.0.1.0 a
 To-Do (maybe):
     - [ ] Determine required addons and CLI utilities.
     - [ ] Create Go-task tasks.
+    - [ ] Setup networking.
     - [ ] Figure out storage.
-    - [ ] setup iSCSI and multipath storage.
+
 
 ---
 

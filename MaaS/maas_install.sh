@@ -91,8 +91,15 @@ function VAR_INPUT {
 
 
 function PSQL_CHECK {
+    if [ "$DB_HOSTNAME" != "localhost" ]; then
+    read -rp "Is the PostgreSQL Server already configured properly on a remote host? (y/n): " yn
+        case $yn in
+            [yY] ) printf "You have indicated the PostgreSQL Server %s is remote. \n Skipping PostgreSQL Installation." "$DB_HOSTNAME" | tee -a "$INSTALL_LOG";;
+            [nN] ) printf "You have indicated the PostgreSQL Server %s is local." "$DB_HOSTNAME" | tee -a "$INSTALL_LOG";;
+            * ) echo "Invalid"; clear; VAR_INPUT;;
+        esac
 # First, check if PSQL is installed and goto install if pre-check function set PSQL_VERSION to 0.
-    if [ "$PSQL_VERSION" == 0 ]; then
+    elif [ "$PSQL_VERSION" == 0 ]; then
             POSTGRE_INSTALL
 # Second, check if version meets minimum requirement.
     elif  [ "$PSQL_VERSION" -gt "$PSQL_REQ" ]; then
@@ -184,31 +191,49 @@ function MAAS_INSTALL {
                     * ) echo "Invalid"; MAAS_INSTALL;;
                 esac
             done
+# Not sure how to remove Interger Warning
         elif [[ "$MAAS_VERSION" == "$MAAS_REQ" ]]; then
             echo "Required version of MaaS is already installed on theis system." | tee -a "$INSTALL_LOG"
-            echo "If you continue, there may be issues with an existing MaaS installation." | tee -a "$INSTALL_LOG"
+            echo "If you continue, there may be issues if there is an existing MaaS installation." | tee -a "$INSTALL_LOG"
             while true; do
                 read -rp "Continue? " yn
                 case $yn in
                     [yY] ) echo "Ok, but this may cause issues." | tee -a "$INSTALL_LOG"; MAAS_INSTALL2;;
-                    [nN] ) echo "Cancelling Installation"; exit 0;;
+                    [nN] ) echo "Cancelling Installation";
+                    printf "If re-running the installation script, make sure to remove the entry created in pg_hba.conf, and remove the PostgreSQL user and database that were created. \n\n
+                    examples to remove Postgre components: \n
+                    host    %s$MAAS_DBNAME    %s$MAAS_DBUSER    0/0     md5 \n
+                    found in file \n
+                    sudo vi /etc/postgresql/%s$PSQL_VERSION/main/pg_hba.conf \n
+                    sudo -u postgresql psql -c \"drop database %s$MAAS_DBNAME\" \n
+                    sudo -u postgresql psql -c \"drop user %s$MAAS_DBUSER\" \n"
+                    exit 0;;
                     * ) echo "Invalid"; MAAS_INSTALL;;
                 esac
             done
         fi
 }
 # Setup PostgreSQL an initialize MaaS region+rack.
+# If re-running the installation script, make sure to remove the psql user, database, and entry in pg_hba.conf
 function MAAS_INSTALL2 {
+        printf "Creating PostgreSQL user/password and database... "
         sudo -i -u postgres psql -c "CREATE USER \"$MAAS_DBUSER\" WITH ENCRYPTED PASSWORD '$MAAS_DBPASS'" | tee -a "$INSTALL_LOG"
         sudo -i -u postgres createdb -O "$MAAS_DBUSER" "$MAAS_DBNAME" | tee -a "$INSTALL_LOG"
         echo "host    ""$MAAS_DBNAME""    ""$MAAS_DBUSER""    0/0     md5" | sudo tee -a /etc/postgresql/"$PSQL_VERSION"/main/pg_hba.conf
+        printf "Initalizing MaaS region+rack..."
+        sleep 10
         sudo maas init region+rack --database-uri "postgres://$MAAS_DBUSER:$MAAS_DBPASS@$DB_HOSTNAME/$MAAS_DBNAME" | tee -a "$INSTALL_LOG"
         printf "\nInstallation complete!!! Logfile is located at %s$INSTALL_LOG \n \n" | tee -a "$INSTALL_LOG"
+        tail -n 19 "$INSTALL_LOG"
         exit 0
 }
 # Begin installation
+    clear
+    printf 'This will install PostgreSQL from repository packages and MaaS snap package if not already installed and meet the minimum required versions. \n
+    It will also check for previous configurations and warn you about them, but will allow you to continue. If there are any previous configurations, this script will add more lines to PostgreSQL pg_hba.conf file ; potentially causing issues. \n\n
+    !!! WARNING !!! : If you are not using "localhost" for the PostgreSQL host, make sure the the PostgreSQL server is configured and accepting connections before proceeding. \n\n'
         while true; do
-            read -rp "Install PostgreSQL and MaaS? " yn
+            read -rp "Has networking been configured on this host? " yn
             case $yn in
                 [yY] ) touch "$INSTALL_LOG" && echo "Beginning installation" | tee -a "$INSTALL_LOG";
                 echo "Clearing old Logfile if present..."
