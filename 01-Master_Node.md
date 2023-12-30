@@ -47,8 +47,15 @@ Well, 💩 can't support it forever. If you want to install OMSA use v11.0.1.0 a
 To-Do (maybe):
     - [ ] Determine required addons and CLI utilities.
     - [ ] Create Go-task tasks.
-    - [ ] Setup networking.
-    - [ ] Figure out storage.
+    - [X] Setup networking. 
+      - I did this after installing MaaS. So, lessons learned:
+      - MaaS does not want to change IP addresses. Needed to remove (purge), re-initialize, re-setup PSQL and MaaS. (Total PITA)
+        - Create bond(s) if not done during Ubuntu installation.
+        - Setup static IP or static DHCP lease for the main incomming interface.
+        - Setup static IP for the interface MaaS will be providing DHCP on.
+        - Configure UniFi router PXE-VLAN to relay DHCP to the static MaaS IP.
+        - Configure any additional VLANs (like storage or lxdbr).
+    - [X] Figure out storage.
 
 
 ---
@@ -59,7 +66,15 @@ To-Do (maybe):
 
 ### Setup Local Storage
 
+My total storage capacity on the R710 is 8x 500Gb in a RAID5, which was configured at Ubuntu installation for LVM with a 500GB VD for the OS and a 2.27TB VD for data. Eventually the data VD will be used in Longhorn for cluster storage.
+
 ### Setup iSCSI and multipath storage
+  
+I'm running a Dell MD3220i SAN/iSCSI device. If you are running iSCSI, now would be a good time to get these things sorted out. I used [this](https://https://linux.dell.com/files/whitepapers/iSCSI_Multipathing_in_Ubuntu_Server_1404_LTS.pdf) as a guide.  
+  
+🖤👑👹 It's ~~an~~ older code, sir, but it checks out. 🖤👑👹
+
+A guide to the iSCSI setup process I did is [here](X-c_iSCSI.md). I setup the MD3220i using Dell's PowerVault Modular Disk Storage Manager (MDSM). 
 
 ---
   
