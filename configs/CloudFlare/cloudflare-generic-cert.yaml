@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: generic-tls-cert
+spec:
+  isCA: false
+  commonName: "<Domain.name>"
+  secretName: generic-tls-cert
+  dnsNames:
+  - "<Domain.name>"
+  duration: 10000h
+  renewBefore: 30h
+  issuerRef:
+    name: letsencrypt-issuer
+    kind: ClusterIssuer

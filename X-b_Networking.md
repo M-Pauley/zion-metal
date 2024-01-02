@@ -36,3 +36,5 @@ You'll get a warning while attempting to login. Copy the link and paste it into 
             - Password: API Key  copied earlier.
             - Server: CloudFlare Worker route. (e.g. unifi-cloudflare-ddns.yournamehere.workers.dev)
     - Setup the routing yourdomain.name to k8s cluster ingress proxy.
+
+## Create API Token for cert-manager.
