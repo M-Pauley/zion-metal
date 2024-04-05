@@ -24,6 +24,9 @@ majversion=5300
 omsaversion=11010
 ubuntuname=jammy
 pgp_pubkeys=0x1285491434D8786F.asc
+browser_ver="Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0"
+dsu_location=FOLDER04882835M/1/
+dsu_file=Systems-Management_Application_RT3W9_LN64_1.5.3_A00.BIN
 # ********************************************
 #
 ########################################################################
@@ -58,8 +61,14 @@ function install_ism() {
     dpkg -i $ismfile
     echo "Installation complete. Packages retained for installation on remaining Dell nodes."
 }
+function install_dsu() {
+    wget --user-agent="$browser_ver" "https://dl.dell.com/$dsu_location/$dsu_file"
+    chmod u+x ./$dsu_file
+    sudo sh ./$dsu_file
+    echo "Installation complete. Packages retained for installation on remaining Dell nodes."
+}
 
-echo "NOTICE: Dell OMSA has reached EOL in 2024."
+echo "NOTICE: Dell OMSA has reached EOL in 2024. End of Support Life - 2027"
 
 select opt in ["Install OMSA" "Install iSM" "Remove OMSA" "exit"]; do
     case $opt in
@@ -67,6 +76,8 @@ select opt in ["Install OMSA" "Install iSM" "Remove OMSA" "exit"]; do
             install_omsa;;
         "Install iSM")
             install_ism;;
+        "Install DSU")
+            install_dsu;;
         "Remove OMSA")
             remove_omsa;;
         "exit")

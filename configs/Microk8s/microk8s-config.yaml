@@ -1,0 +1,26 @@
+# microk8s-config.yaml
+#
+# Add this config file to automatically configure Microk8s snap at install/runtime.
+# sudo mkdir -p /var/snap/microk8s/common/
+# sudo cp microk8s-config.yaml /var/snap/microk8s/common/.microk8s.yaml
+---
+version: 0.1.0
+
+
+# 'persistentClusterToken' is a persistent token that may be used to authenticate join requests made to the local node.
+# Persistent token length should be 32 characters. Other nodes will be able to join using the following command:
+#   $ microk8s join $THIS_NODE_IP:25000/$persistentClusterTokenValue
+persistentClusterToken: "a106dc359d7cb48a26b2086639f3e6b8"
+
+# 'join' is configuration to join the node to an existing MicroK8s cluster.
+# join:
+#  url: "$MASTER_IP:25000/a106dc359d7cb48a26b2086639f3e6b8"       # 'url' is the cluster join URL
+#  worker: true       # set 'worker' to true to join as a worker node. Leave commented for HA Clusters
+
+# Add Micro8k8s built-in addons or add your own from the repo added above.
+addons:
+  - name: dns                 # Deploys CoreDNS. It is recommended that this addon is always enabled.
+  - name: ha-cluster          # Allows for high availability on clusters with at least three nodes.
+  - name: helm                # Transition addon introducing the Helm 3 package manager
+#  - name: hostpath-storage    # Create a default storage class which allocates storage from a host directory. 
+#                              # Note!: The add-on uses simple filesystem storage local to the node where it was added. Not suitable for a production environment or clusters.

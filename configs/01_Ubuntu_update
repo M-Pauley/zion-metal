@@ -1,0 +1,12 @@
+#! /usr/bin/env bash
+########################################################################
+# 
+# Update Ubuntu and remove Pro-annoyance.
+# Run on any node that has Ubuntu installed.
+#
+########################################################################
+
+sudo pro config set apt_news=false
+sudo apt update
+sudo apt upgrade -y
+sudo snap refresh
