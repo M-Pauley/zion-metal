@@ -117,17 +117,17 @@ I'll be honest, I don't know much about the K8s networking backend and will be s
 #### Part 1: Complete
 
 At this point, you should be able to run `microk8s status` and see a working Kubernetes service. 
-```
->microk8s is running  
->high-availability: no  
->  datastore master nodes: 127.0.0.1:19001  
->  datastore standby nodes: none  
->addons:  
->  enabled:  
->    dns                  # (core) CoreDNS  
->    ha-cluster           # (core) Configure high availability on the current node  
->    helm                 # (core) Helm - the package manager for Kubernetes  
->    helm3                # (core) Helm 3 - the package manager for Kubernetes  
+>```
+microk8s is running  
+high-availability: no  
+  datastore master nodes: 127.0.0.1:19001  
+  datastore standby nodes: none  
+addons:  
+  enabled:  
+    dns                  # (core) CoreDNS  
+    ha-cluster           # (core) Configure high availability on the current node  
+    helm                 # (core) Helm - the package manager for Kubernetes  
+    helm3                # (core) Helm 3 - the package manager for Kubernetes  
 ```
 There isn't much here, but that will change in time. It would also be a good time to add any aliases to either .bashrc or .bash_aliases. I have `alias kubectl='microk8s kubectl'` to eliminate using `microk8s kubectl` and `alias k8s-getall='kubectl get all --all-namespaces'` which should show you:
 
