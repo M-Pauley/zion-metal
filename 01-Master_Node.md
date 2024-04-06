@@ -117,7 +117,7 @@ I'll be honest, I don't know much about the K8s networking backend and will be s
 #### Part 1: Complete
 
 At this point, you should be able to run `microk8s status` and see a working Kubernetes service. 
->```
+```
 microk8s is running  
 high-availability: no  
   datastore master nodes: 127.0.0.1:19001  
@@ -130,27 +130,27 @@ addons:
     helm3                # (core) Helm 3 - the package manager for Kubernetes  
 ```
 There isn't much here, but that will change in time. It would also be a good time to add any aliases to either .bashrc or .bash_aliases. I have `alias kubectl='microk8s kubectl'` to eliminate using `microk8s kubectl` and `alias k8s-getall='kubectl get all --all-namespaces'` which should show you:
-
->NAMESPACE     NAME                                         READY   STATUS    RESTARTS   AGE  
->kube-system   pod/calico-kube-controllers-77bd7c5b-x68rc   1/1     Running   0          71m  
->kube-system   pod/calico-node-4ldbn                        1/1     Running   0          71m  
->kube-system   pod/coredns-864597b5fd-7jzp6                 1/1     Running   0          71m  
->  
->NAMESPACE     NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE  
->default       service/kubernetes   ClusterIP   10.152.183.1    <none>        443/TCP                  72m  
->kube-system   service/kube-dns     ClusterIP   10.152.183.10   <none>        53/UDP,53/TCP,9153/TCP   71m  
->  
->NAMESPACE     NAME                         DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE  
->kube-system   daemonset.apps/calico-node   1         1         1       1            1           kubernetes.io/os=linux   71m  
->  
->NAMESPACE     NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE  
->kube-system   deployment.apps/calico-kube-controllers   1/1     1            1           71m  
->kube-system   deployment.apps/coredns                   1/1     1            1           71m  
->  
->NAMESPACE     NAME                                               DESIRED   CURRENT   READY   AGE  
->kube-system   replicaset.apps/calico-kube-controllers-77bd7c5b   1         1         1       71m  
->kube-system   replicaset.apps/coredns-864597b5fd                 1         1         1       71m  
-
+```
+NAMESPACE     NAME                                         READY   STATUS    RESTARTS   AGE  
+kube-system   pod/calico-kube-controllers-77bd7c5b-x68rc   1/1     Running   0          71m  
+kube-system   pod/calico-node-4ldbn                        1/1     Running   0          71m  
+kube-system   pod/coredns-864597b5fd-7jzp6                 1/1     Running   0          71m  
+  
+NAMESPACE     NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE  
+default       service/kubernetes   ClusterIP   10.152.183.1    <none>        443/TCP                  72m  
+kube-system   service/kube-dns     ClusterIP   10.152.183.10   <none>        53/UDP,53/TCP,9153/TCP   71m  
+  
+NAMESPACE     NAME                         DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE  
+kube-system   daemonset.apps/calico-node   1         1         1       1            1           kubernetes.io/os=linux   71m  
+  
+NAMESPACE     NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE  
+kube-system   deployment.apps/calico-kube-controllers   1/1     1            1           71m  
+kube-system   deployment.apps/coredns                   1/1     1            1           71m  
+  
+NAMESPACE     NAME                                               DESIRED   CURRENT   READY   AGE  
+kube-system   replicaset.apps/calico-kube-controllers-77bd7c5b   1         1         1       71m  
+kube-system   replicaset.apps/coredns-864597b5fd                 1         1         1       71m  
+```
 I also installed the kubectl snap package `sudo snap install kubectl --classic` and [kubecolor](https://github.com/kubecolor/kubecolor).
 
 If you want to continue spinning up K8s, you can go [here](./01-Master_Node.md#microk8s-part-2).
