@@ -154,9 +154,13 @@ kube-system   replicaset.apps/coredns-864597b5fd                 1         1    
 I also installed the kubectl snap package `sudo snap install kubectl --classic` and [kubecolor](https://github.com/kubecolor/kubecolor).
 
 If you want to continue spinning up K8s, you can go [here](./01-Master_Node.md#microk8s-part-2).
-Or if you would rather get more nodes added to the cluster, [continue on](./01-Master_Node.md#maas---🤘-metal-🤘-as-a-service)!
+Or if you would rather get more nodes added to the cluster, [continue on](./01-Master_Node.md#maas)!
 
-### MaaS - 🤘 Metal 🤘 as a Service 
+---
+### MaaS  
+
+  🤘 Metal 🤘 as a Service
+
 #### Install
 
 Now we should have the MaaS directory we can `cd ./MaaS` followed by `./maas_install.sh`. Check out the [MaaS/README.md](./README.md) to see a breakdown of what the script is doing. You could also follow [this guide](https://maas.io/docs/fresh-installation-of-maas) to manually install MaaS.  
