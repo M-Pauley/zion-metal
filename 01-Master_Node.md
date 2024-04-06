@@ -81,7 +81,7 @@ A guide to the iSCSI setup process I did is [here](X-c_iSCSI.md). I setup the MD
   
 👯🔗 Yes, Master. 🔗👯  
 
-This part is a choose-your-own-adventure story. First, you could setup basic Microk8s services as a foundation for the cluster or setup and configure the cluster nodes in MaaS.  
+This part is a choose-your-own-adventure story. First, you could setup [basic Microk8s services](./01-Master_Node.md#basics) as a foundation for the cluster or setup and configure the cluster nodes in [MaaS](./01-Master_Node.md#maas---🤘-metal-🤘-as-a-service).  
 
 The route I'm choosing is to configure Microk8s services, add my nodes to MaaS, then use deployments to populate the cluster.  
 
@@ -89,16 +89,24 @@ The route I'm choosing is to configure Microk8s services, add my nodes to MaaS, 
 #### Basics  
 
 Let's make this (somewhat) easy. The configs/Microk8s folder contains a yaml file to edit and put in place before we install Microk8s that will pre-configure our basic environment. Feel free to check out all the options available with examples [here](https://microk8s.io/docs/add-launch-config). 
+
 ```
 sudo mkdir -p /var/snap/microk8s/common/
 sudo cp microk8s-config.yaml /var/snap/microk8s/common/.microk8s.yaml
 ```
+
 Then run `sudo snap install microk8s --classic` to install.
 Another option is to apply the configuration file after installing the microk8s snap with `sudo snap set microk8s config="$(cat microk8s-config.yaml)"`
 
 My config file will enable the most basic features that don't require any additional configuration. Also, I want to manually set a randomly-generated, hex-based, 32-character, persistent cluster token rather than having the system generate one to join each node so it can be sent out in the config file to the other nodes to join the cluster.  
 
 If you mess up (like the 1,000's of times I did): `sudo snap remove microk8s` and `sudo snap forget #`, where # is the snapshot created on remove.
+
+You probably won't have to, but this is something to keep in mind if you are or want to run a firewall.
+> *Note:* You may need to configure your firewall to allow pod-to-pod and pod-to-internet communication:
+> `sudo ufw status`
+> `sudo ufw allow in on cni0 && sudo ufw allow out on cni0`
+> `sudo ufw default allow routed`
 
 Add yourself to the proper group `sudo usermod -a -G microk8s $USER` and either logout/login or `su - $USER` to apply the change. Then create `sudo mkdir -p ~/.kube` and set the proper permissions `sudo chown -f -R $USER ~/.kube`.
 
@@ -108,7 +116,20 @@ I'll be honest, I don't know much about the K8s networking backend and will be s
 
 #### Part 1: Complete
 
-At this point, you should be able to run `microk8s status` and see a working Kubernetes service. There isn't much here, but that will change in time. It would also be a good time to add any aliases to either .bashrc or .bash_aliases. I have `alias kubectl='microk8s kubectl'` to eliminate using `microk8s kubectl` and `alias getall-k8s='kubectl get all --all-namespaces'` which should show you:
+At this point, you should be able to run `microk8s status` and see a working Kubernetes service. 
+
+>microk8s is running
+>high-availability: no
+>  datastore master nodes: 127.0.0.1:19001
+>  datastore standby nodes: none
+>addons:
+>  enabled:
+>    dns                  # (core) CoreDNS
+>    ha-cluster           # (core) Configure high availability on the current node
+>    helm                 # (core) Helm - the package manager for Kubernetes
+>    helm3                # (core) Helm 3 - the package manager for Kubernetes  
+
+There isn't much here, but that will change in time. It would also be a good time to add any aliases to either .bashrc or .bash_aliases. I have `alias kubectl='microk8s kubectl'` to eliminate using `microk8s kubectl` and `alias k8s-getall='kubectl get all --all-namespaces'` which should show you:
 
 >NAMESPACE     NAME                                         READY   STATUS    RESTARTS   AGE
 >kube-system   pod/calico-kube-controllers-77bd7c5b-x68rc   1/1     Running   0          71m
@@ -129,6 +150,8 @@ At this point, you should be able to run `microk8s status` and see a working Kub
 >NAMESPACE     NAME                                               DESIRED   CURRENT   READY   AGE
 >kube-system   replicaset.apps/calico-kube-controllers-77bd7c5b   1         1         1       71m
 >kube-system   replicaset.apps/coredns-864597b5fd                 1         1         1       71m
+
+I also installed the kubectl snap package `sudo snap install kubectl --classic` and [kubecolor](https://github.com/kubecolor/kubecolor).
 
 If you want to continue spinning up K8s, you can go [here](./01-Master_Node.md#microk8s-part-2).
 Or if you would rather get more nodes added to the cluster, [continue on](./01-Master_Node.md#maas---🤘-metal-🤘-as-a-service)!
